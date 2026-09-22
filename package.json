@@ -1,0 +1,44 @@
+{
+  "name": "collaborative-ide",
+  "productName": "Collaborative IDE",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A modern AI-integrated real-time collaborative desktop IDE.",
+  "main": "electron/main.cjs",
+  "type": "module",
+  "scripts": {
+    "start": "electron electron/main.cjs",
+    "electron": "electron electron/main.cjs",
+    "electron:dev": "concurrently -k \"cross-env BROWSER=none vite\" \"wait-on http://localhost:3000 && cross-env VITE_DEV_SERVER_URL=http://localhost:3000 electron electron/main.cjs\"",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@monaco-editor/react": "^4.6.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
+    "canvas-confetti": "^1.9.4",
+    "lucide-react": "^0.475.0",
+    "monaco-editor": "^0.52.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "y-monaco": "^0.1.6",
+    "y-webrtc": "^10.3.0",
+    "y-websocket": "^2.0.4",
+    "yjs": "^13.6.23"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^22.13.4",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^10.0.5",
+    "cross-env": "^10.1.0",
+    "electron": "^44.1.1",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0",
+    "wait-on": "^9.1.0"
+  }
+}

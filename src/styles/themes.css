@@ -1,0 +1,137 @@
+/* Professional IDE Themes inspired by VS Code and Atom */
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'Fira Code', 'Cascadia Code', Consolas, 'Courier New', monospace;
+}
+
+[data-theme='atom-one-dark'] {
+  --bg-app: #181a1f;
+  --bg-activity: #181a1f;
+  --bg-sidebar: #21252b;
+  --bg-editor: #282c34;
+  --bg-panel: #21252b;
+  --bg-panel-secondary: #282c34;
+  --bg-status: #181a1f;
+  --bg-tab-active: #282c34;
+  --bg-tab-inactive: #21252b;
+  --bg-hover: rgba(255, 255, 255, 0.04);
+  --bg-active: rgba(255, 255, 255, 0.08);
+
+  --border-color: #181a1f;
+  --border-subtle: #2b2d30;
+
+  --text-main: #abb2bf;
+  --text-bright: #d7dae0;
+  --text-muted: #636d83;
+  --text-accent: #61afef;
+
+  --accent-primary: #4d78cc;
+  --accent-hover: #5d88dc;
+  --accent-subtle: rgba(77, 120, 204, 0.15);
+  --accent-secondary: #98c379;
+  --accent-purple: #c678dd;
+  --accent-warning: #e5c07b;
+  --accent-danger: #e06c75;
+  --accent-success: #98c379;
+
+  --monaco-theme: 'vs-dark';
+}
+
+[data-theme='tokyo-night'] {
+  --bg-app: #13141c;
+  --bg-activity: #13141c;
+  --bg-sidebar: #16161e;
+  --bg-editor: #1a1b26;
+  --bg-panel: #16161e;
+  --bg-panel-secondary: #1a1b26;
+  --bg-status: #13141c;
+  --bg-tab-active: #1a1b26;
+  --bg-tab-inactive: #16161e;
+  --bg-hover: rgba(255, 255, 255, 0.04);
+  --bg-active: rgba(255, 255, 255, 0.08);
+
+  --border-color: #101014;
+  --border-subtle: #24283b;
+
+  --text-main: #a9b1d6;
+  --text-bright: #c0caf5;
+  --text-muted: #565f89;
+  --text-accent: #7aa2f7;
+
+  --accent-primary: #7aa2f7;
+  --accent-hover: #89b4fa;
+  --accent-subtle: rgba(122, 162, 247, 0.15);
+  --accent-secondary: #7dcfff;
+  --accent-purple: #bb9af7;
+  --accent-warning: #e0af68;
+  --accent-danger: #f7768e;
+  --accent-success: #9ece6a;
+
+  --monaco-theme: 'vs-dark';
+}
+
+[data-theme='midnight-slate'] {
+  --bg-app: #0b0f19;
+  --bg-activity: #0b0f19;
+  --bg-sidebar: #0f172a;
+  --bg-editor: #111827;
+  --bg-panel: #0f172a;
+  --bg-panel-secondary: #1e293b;
+  --bg-status: #0b0f19;
+  --bg-tab-active: #111827;
+  --bg-tab-inactive: #0f172a;
+  --bg-hover: rgba(255, 255, 255, 0.04);
+  --bg-active: rgba(255, 255, 255, 0.08);
+
+  --border-color: #0b0f19;
+  --border-subtle: #1e293b;
+
+  --text-main: #94a3b8;
+  --text-bright: #f1f5f9;
+  --text-muted: #64748b;
+  --text-accent: #38bdf8;
+
+  --accent-primary: #38bdf8;
+  --accent-hover: #60a5fa;
+  --accent-subtle: rgba(56, 189, 248, 0.15);
+  --accent-secondary: #34d399;
+  --accent-purple: #a855f7;
+  --accent-warning: #fbbf24;
+  --accent-danger: #f87171;
+  --accent-success: #34d399;
+
+  --monaco-theme: 'vs-dark';
+}
+
+[data-theme='light-modern'] {
+  --bg-app: #e8e8e8;
+  --bg-activity: #2c2c2c;
+  --bg-sidebar: #f3f3f3;
+  --bg-editor: #ffffff;
+  --bg-panel: #f8f8f8;
+  --bg-panel-secondary: #f0f0f0;
+  --bg-status: #007acc;
+  --bg-tab-active: #ffffff;
+  --bg-tab-inactive: #ececec;
+  --bg-hover: rgba(0, 0, 0, 0.04);
+  --bg-active: rgba(0, 0, 0, 0.08);
+
+  --border-color: #d4d4d4;
+  --border-subtle: #e0e0e0;
+
+  --text-main: #3b3b3b;
+  --text-bright: #1e1e1e;
+  --text-muted: #767676;
+  --text-accent: #007acc;
+
+  --accent-primary: #007acc;
+  --accent-hover: #0062a3;
+  --accent-subtle: rgba(0, 122, 204, 0.12);
+  --accent-secondary: #107c41;
+  --accent-purple: #8661c5;
+  --accent-warning: #b8860b;
+  --accent-danger: #d83b01;
+  --accent-success: #107c41;
+
+  --monaco-theme: 'light';
+}
