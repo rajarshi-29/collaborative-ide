@@ -106,7 +106,16 @@ export const Header = ({
             }}
             title="Manage Collaboration Room"
           >
-            <Users size={13} color="var(--accent-success)" />
+            <Users
+              size={13}
+              color={
+                room.status === 'connected'
+                  ? 'var(--accent-success)'
+                  : room.status === 'connecting'
+                  ? 'var(--accent-warning)'
+                  : 'var(--accent-danger)'
+              }
+            />
             <span>Room:</span>
             <strong style={{ color: 'var(--accent-primary)', fontWeight: 500 }}>
               {room.roomId || ''}

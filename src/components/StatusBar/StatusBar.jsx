@@ -31,10 +31,19 @@ export const StatusBar = ({
         {room && (
           <button
             className="status-bar-item"
-            title="Real-time Collaboration Status"
+            title={`Real-time Collaboration: ${room.status || 'Offline'}`}
             onClick={onOpenCollaborationModal}
           >
-            <Radio size={11} color="var(--accent-success)" />
+            <Radio
+              size={11}
+              color={
+                room.status === 'connected'
+                  ? 'var(--accent-success)'
+                  : room.status === 'connecting'
+                  ? 'var(--accent-warning)'
+                  : 'var(--accent-danger)'
+              }
+            />
             <span>{room.roomId || 'Offline'}</span>
             {room.collaborators && room.collaborators.length > 0 && (
               <span>({room.collaborators.length})</span>

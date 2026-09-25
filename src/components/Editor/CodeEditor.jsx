@@ -82,7 +82,12 @@ export const CodeEditor = ({
         onCursorChange({ line: e.position.lineNumber, col: e.position.column });
       }
       if (activeTab) {
-        collabService.updateCursor(e.position.lineNumber, e.position.column, activeTab.fileId);
+        collabService.updateCursor(
+          e.position.lineNumber,
+          e.position.column,
+          activeTab.fileId,
+          activeTab.name || activeTab.title || activeTab.path
+        );
       }
     });
   };
@@ -90,8 +95,19 @@ export const CodeEditor = ({
   useEffect(() => {
     if (editorRef.current && activeTab) {
       collabService.bindToMonaco(editorRef.current, activeTab.fileId, activeTab.content);
+      collabService.updateCursor(1, 1, activeTab.fileId, activeTab.name || activeTab.title || activeTab.path);
     }
   }, [activeTab?.fileId]);
+
+  useEffect(() => {
+    if (editorRef.current && activeTab?.targetLine) {
+      try {
+        editorRef.current.revealLineInCenter(activeTab.targetLine);
+        editorRef.current.setPosition({ lineNumber: activeTab.targetLine, column: 1 });
+        editorRef.current.focus();
+      } catch (e) {}
+    }
+  }, [activeTab?.targetLine, activeTab?.id]);
 
   if (!activeTab) {
     return (

@@ -69,7 +69,11 @@ export function App() {
       setRoom(updatedRoom);
     });
 
-    collabService.joinRoom('collab-room-alpha');
+    // Parse room ID from URL if provided (e.g. invite links)
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomFromUrl = urlParams.get('room');
+    const initialRoom = roomFromUrl && roomFromUrl.trim() ? roomFromUrl.trim() : 'collab-room-alpha';
+    collabService.joinRoom(initialRoom);
 
     // Global Keybindings (Ctrl+I for Quick AI, Ctrl+` for Terminal, Ctrl+O for Open Folder)
     const handleGlobalKeyDown = (e) => {
@@ -138,11 +142,14 @@ export function App() {
   };
 
   // File & Tab Operations
-  const handleSelectFile = async (file) => {
+  const handleSelectFile = async (file, lineNumber = null) => {
     if (file.type !== 'file') return;
 
     const existingTab = tabs.find(t => t.fileId === file.id);
     if (existingTab) {
+      if (lineNumber) {
+        setTabs(prev => prev.map(t => t.id === existingTab.id ? { ...t, targetLine: lineNumber } : t));
+      }
       setActiveTabId(existingTab.id);
       return;
     }
@@ -164,7 +171,8 @@ export function App() {
       fullPath: file.fullPath,
       fileHandle: file.fileHandle,
       language: file.language || 'plaintext',
-      content: content !== undefined && content !== null ? content : ''
+      content: content !== undefined && content !== null ? content : '',
+      targetLine: lineNumber || null
     };
 
     setTabs(prev => [...prev, newTab]);
@@ -379,6 +387,10 @@ export function App() {
               <CollabPanel
                 room={room}
                 onJoinRoom={(newRoomId) => collabService.joinRoom(newRoomId)}
+                onLeaveRoom={() => collabService.leaveRoom()}
+                onReconnect={() => collabService.reconnect()}
+                onSelectFile={handleSelectFile}
+                files={files}
               />
             )}
           </div>
@@ -477,6 +489,10 @@ export function App() {
         onClose={() => setIsCollabModalOpen(false)}
         room={room}
         onJoinRoom={(newRoomId) => collabService.joinRoom(newRoomId)}
+        onLeaveRoom={() => collabService.leaveRoom()}
+        onReconnect={() => collabService.reconnect()}
+        onSelectFile={handleSelectFile}
+        files={files}
       />
 
       <SettingsModal

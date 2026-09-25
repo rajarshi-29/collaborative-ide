@@ -373,3 +373,98 @@ input:focus, textarea:focus, select:focus {
   color: var(--accent-success);
   border: 1px solid rgba(152, 195, 121, 0.25);
 }
+
+.badge-warning {
+  background: rgba(229, 192, 123, 0.12);
+  color: var(--accent-warning);
+  border: 1px solid rgba(229, 192, 123, 0.25);
+}
+
+.badge-danger {
+  background: rgba(224, 108, 117, 0.12);
+  color: var(--accent-danger);
+  border: 1px solid rgba(224, 108, 117, 0.25);
+}
+
+/* Yjs Monaco Remote Collaborator Cursors & Selections */
+.yRemoteSelection {
+  background-color: rgba(97, 175, 239, 0.22);
+}
+
+.yRemoteSelectionHead {
+  position: absolute;
+  border-left: 2px solid #61afef;
+  border-top: 2px solid #61afef;
+  border-bottom: 2px solid #61afef;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.yRemoteSelectionHead::after {
+  position: absolute;
+  content: ' ';
+  border: 3px solid #61afef;
+  border-radius: 4px;
+  left: -4px;
+  top: -5px;
+}
+
+/* Collaborator Profile Card & Controls */
+.collab-profile-card {
+  padding: 8px 10px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.collab-color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.1s ease, border-color 0.1s ease;
+}
+
+.collab-color-dot:hover {
+  transform: scale(1.15);
+}
+
+.collab-color-dot.active {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 1px var(--border-subtle);
+}
+
+/* Collab In-Room Chat Stream */
+.collab-chat-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  gap: 6px;
+}
+
+.collab-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0;
+  max-height: 220px;
+}
+
+.collab-chat-bubble {
+  padding: 6px 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
