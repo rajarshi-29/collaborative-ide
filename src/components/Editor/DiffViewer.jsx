@@ -12,12 +12,14 @@ export const DiffViewer = ({
 }) => {
   return (
     <div style={{
-      position: 'absolute',
-      inset: 0,
-      zIndex: 50,
+      flex: 1,
+      width: '100%',
+      height: '100%',
+      position: 'relative',
       background: 'var(--bg-editor)',
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      overflow: 'hidden'
     }}>
       {/* Diff Toolbar */}
       <div style={{

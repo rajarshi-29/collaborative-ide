@@ -451,15 +451,7 @@ export function App() {
               onCloseTab={handleCloseTab}
             />
 
-            <CodeEditor
-              activeTab={activeTab}
-              theme={theme}
-              onChangeContent={handleEditorContentChange}
-              onCursorChange={setCursorPosition}
-            />
-
-            {/* Diff Preview Overlay */}
-            {diffProposal && (
+            {diffProposal ? (
               <DiffViewer
                 originalContent={diffProposal.originalContent}
                 modifiedContent={diffProposal.modifiedContent}
@@ -467,6 +459,13 @@ export function App() {
                 theme={theme}
                 onAccept={handleAcceptDiff}
                 onReject={handleRejectDiff}
+              />
+            ) : (
+              <CodeEditor
+                activeTab={activeTab}
+                theme={theme}
+                onChangeContent={handleEditorContentChange}
+                onCursorChange={setCursorPosition}
               />
             )}
           </div>
