@@ -114,7 +114,7 @@ export class CollaborationService {
     this.notifyListeners();
   }
 
-  joinRoom(roomId) {
+  joinRoom(roomId, password = null) {
     if (!roomId || !roomId.trim()) return;
     const cleanRoomId = roomId.trim();
 
@@ -143,6 +143,7 @@ export class CollaborationService {
     }
 
     this.currentRoomId = cleanRoomId;
+    this.currentPassword = password;
     this.status = 'connecting';
     this.isSynced = false;
 
@@ -152,7 +153,7 @@ export class CollaborationService {
           'wss://signaling.yjs.dev',
           'wss://y-webrtc-signaling.fly.dev'
         ],
-        password: null
+        password: password || null
       });
 
       // Update local awareness state

@@ -12,6 +12,7 @@ import {
 import { CodeRunnerService } from '../../services/codeRunnerService';
 
 export const TerminalPanel = ({
+  height = 220,
   onClose,
   onAskAIWithLog,
   runOutput = '',
@@ -135,6 +136,15 @@ export const TerminalPanel = ({
     };
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        fitAddonRef.current?.fit();
+      } catch (e) {}
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [height, isMaximized]);
+
   const handleTerminalCommand = async (cmd, term) => {
     if (!cmd) {
       term.write('collab-ide:~/workspace$ ');
@@ -237,15 +247,31 @@ export const TerminalPanel = ({
         break;
       }
 
-      default:
+      default: {
+        if (window.electronAPI?.runCommand) {
+          try {
+            const cwd = activeTab?.fullPath ? activeTab.fullPath.substring(0, activeTab.fullPath.lastIndexOf('\\') || activeTab.fullPath.lastIndexOf('/')) : null;
+            const res = await window.electronAPI.runCommand(cmd, cwd);
+            if (res.stdout) {
+              for (const l of res.stdout.split('\n')) term.writeln(l);
+            }
+            if (res.stderr) {
+              for (const l of res.stderr.split('\n')) term.writeln(`\x1b[31m${l}\x1b[0m`);
+            }
+            break;
+          } catch (e) {
+            // fallback to command not found
+          }
+        }
         term.writeln(`bash: ${mainCmd}: command not found`);
+      }
     }
 
     term.write('collab-ide:~/workspace$ ');
   };
 
   return (
-    <div className="terminal-section" style={{ height: isMaximized ? '75vh' : '200px' }}>
+    <div className="terminal-section" style={{ height: isMaximized ? '75vh' : `${height || 220}px` }}>
       {/* Panel Header */}
       <div style={{
         height: '30px',

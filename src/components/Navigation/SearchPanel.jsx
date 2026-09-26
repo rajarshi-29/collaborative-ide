@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Search, CaseSensitive, WholeWord, FileCode } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, CaseSensitive, WholeWord, FileCode, Loader2 } from 'lucide-react';
+import { FileSystemService } from '../../services/fileSystemService';
 
 export const SearchPanel = ({
   files = [],
@@ -8,48 +9,35 @@ export const SearchPanel = ({
   const [query, setQuery] = useState('');
   const [matchCase, setMatchCase] = useState(false);
   const [matchWholeWord, setMatchWholeWord] = useState(false);
+  const [matches, setMatches] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const fsService = FileSystemService.getInstance();
 
-  const getMatches = () => {
-    if (!query.trim()) return [];
+  useEffect(() => {
+    if (!query.trim()) {
+      setMatches([]);
+      setIsSearching(false);
+      return;
+    }
 
-    const results = [];
-    const searchRecursive = (items) => {
-      for (const item of items) {
-        if (item.type === 'file' && item.content) {
-          const lines = item.content.split('\n');
-          lines.forEach((line, lineIndex) => {
-            let isMatch = false;
-
-            if (matchWholeWord) {
-              const flags = matchCase ? 'g' : 'gi';
-              const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-              const regex = new RegExp(`\\b${escaped}\\b`, flags);
-              isMatch = regex.test(line);
-            } else if (matchCase) {
-              isMatch = line.includes(query);
-            } else {
-              isMatch = line.toLowerCase().includes(query.toLowerCase());
-            }
-
-            if (isMatch) {
-              results.push({
-                file: item,
-                lineNumber: lineIndex + 1,
-                lineContent: line.trim()
-              });
-            }
-          });
-        } else if (item.children) {
-          searchRecursive(item.children);
-        }
+    setIsSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const results = await fsService.searchFiles({ query, matchCase, matchWholeWord });
+        setMatches(results || []);
+      } catch (err) {
+        console.warn('Search failed:', err);
+        setMatches([]);
+      } finally {
+        setIsSearching(false);
       }
-    };
-    searchRecursive(files);
-    return results;
-  };
+    }, 200);
 
-  const matches = getMatches();
-  const uniqueFilesCount = new Set(matches.map(m => m.file.id)).size;
+    return () => clearTimeout(timer);
+  }, [query, matchCase, matchWholeWord, files]);
+
+  const uniqueFilesCount = new Set(matches.map(m => m.file?.id || m.file?.fullPath || m.file?.name)).size;
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden' }}>
@@ -69,7 +57,7 @@ export const SearchPanel = ({
         <span>SEARCH</span>
         {query.trim() && (
           <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'none' }}>
-            {matches.length} {matches.length === 1 ? 'match' : 'matches'} in {uniqueFilesCount} {uniqueFilesCount === 1 ? 'file' : 'files'}
+            {isSearching ? 'Searching...' : `${matches.length} ${matches.length === 1 ? 'match' : 'matches'} in ${uniqueFilesCount} ${uniqueFilesCount === 1 ? 'file' : 'files'}`}
           </span>
         )}
       </div>
@@ -131,7 +119,7 @@ export const SearchPanel = ({
 
       {/* Results List */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
-        {query.trim() && matches.length === 0 && (
+        {query.trim() && !isSearching && matches.length === 0 && (
           <div style={{ padding: '16px 12px', fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center' }}>
             No results found for "{query}".
           </div>

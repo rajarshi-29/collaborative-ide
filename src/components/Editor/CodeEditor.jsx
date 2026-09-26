@@ -13,6 +13,7 @@ export const CodeEditor = ({
 
   const handleEditorMount = (editor, monaco) => {
     editorRef.current = editor;
+    window.monaco = monaco;
 
     // Define Refined Atom One Dark Theme in Monaco
     monaco.editor.defineTheme('atom-one-dark', {

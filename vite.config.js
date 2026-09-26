@@ -13,5 +13,17 @@ export default defineConfig({
   server: {
     port: 3000,
     open: false
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          monaco: ['@monaco-editor/react', 'monaco-editor'],
+          xterm: ['@xterm/xterm', '@xterm/addon-fit'],
+          collab: ['yjs', 'y-webrtc', 'y-monaco'],
+          vendor: ['react', 'react-dom', 'lucide-react']
+        }
+      }
+    }
   }
 });

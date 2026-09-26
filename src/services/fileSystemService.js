@@ -97,6 +97,15 @@ export class FileSystemService {
   }
 
   saveToStorage() {
+    if (this._saveTimeout) {
+      clearTimeout(this._saveTimeout);
+    }
+    this._saveTimeout = setTimeout(() => {
+      this._saveToStorageImmediate();
+    }, 800);
+  }
+
+  _saveToStorageImmediate() {
     try {
       const cleanItems = (items) => {
         if (!Array.isArray(items)) return [];
@@ -115,6 +124,62 @@ export class FileSystemService {
       console.warn('Failed to save files to storage', e);
     }
   }
+
+  async searchFiles({ query, matchCase = false, matchWholeWord = false }) {
+    if (!query || !query.trim()) return [];
+
+    if (this.currentFolder?.rootPath && window.electronAPI?.invoke) {
+      try {
+        const diskResults = await window.electronAPI.invoke('fs:searchFiles', {
+          rootPath: this.currentFolder.rootPath,
+          query,
+          matchCase,
+          matchWholeWord
+        });
+        if (Array.isArray(diskResults)) {
+          return diskResults;
+        }
+      } catch (err) {
+        console.warn('Native searchFiles failed, falling back to memory search:', err);
+      }
+    }
+
+    const results = [];
+    const searchRecursive = (items) => {
+      for (const item of items) {
+        if (item.type === 'file' && item.content) {
+          const lines = item.content.split('\n');
+          lines.forEach((line, lineIndex) => {
+            let isMatch = false;
+            if (matchWholeWord) {
+              const flags = matchCase ? 'g' : 'gi';
+              const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              const regex = new RegExp(`\\b${escaped}\\b`, flags);
+              isMatch = regex.test(line);
+            } else if (matchCase) {
+              isMatch = line.includes(query);
+            } else {
+              isMatch = line.toLowerCase().includes(query.toLowerCase());
+            }
+
+            if (isMatch) {
+              results.push({
+                file: item,
+                lineNumber: lineIndex + 1,
+                lineContent: line.trim()
+              });
+            }
+          });
+        } else if (item.children) {
+          searchRecursive(item.children);
+        }
+      }
+    };
+
+    searchRecursive(this.workspace);
+    return results;
+  }
+
 
   getWorkspace() {
     return this.workspace;

@@ -54,6 +54,8 @@ export function App() {
   // Resizing state
   const isResizingLeft = useRef(false);
   const isResizingRight = useRef(false);
+  const isResizingBottom = useRef(false);
+  const [terminalHeight, setTerminalHeight] = useState(220);
 
   // Initialize first tab
   useEffect(() => {
@@ -182,8 +184,26 @@ export function App() {
 
   const handleCloseTab = (tabId) => {
     const tabIndex = tabs.findIndex(t => t.id === tabId);
+    const closedTab = tabs.find(t => t.id === tabId);
     const newTabs = tabs.filter(t => t.id !== tabId);
     setTabs(newTabs);
+
+    // Dispose Monaco model if not used by any remaining tabs
+    if (closedTab && window.monaco) {
+      try {
+        const modelPath = closedTab.path || closedTab.id;
+        const isStillUsed = newTabs.some(t => (t.path || t.id) === modelPath);
+        if (!isStillUsed) {
+          const modelUri = window.monaco.Uri.parse(modelPath);
+          const existingModel = window.monaco.editor.getModel(modelUri);
+          if (existingModel) {
+            existingModel.dispose();
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to dispose Monaco model:', e);
+      }
+    }
 
     if (activeTabId === tabId) {
       if (newTabs.length > 0) {
@@ -330,6 +350,23 @@ export function App() {
     window.addEventListener('mouseup', onMouseUp);
   };
 
+  const handleMouseDownBottom = () => {
+    isResizingBottom.current = true;
+    const onMouseMove = (e) => {
+      if (isResizingBottom.current) {
+        const newHeight = window.innerHeight - e.clientY - 24;
+        setTerminalHeight(Math.max(120, Math.min(600, newHeight)));
+      }
+    };
+    const onMouseUp = () => {
+      isResizingBottom.current = false;
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
   return (
     <div className="app-container">
       {/* Top Header */}
@@ -436,17 +473,21 @@ export function App() {
 
           {/* Bottom Terminal Section */}
           {showTerminal && (
-            <TerminalPanel
-              onClose={() => setShowTerminal(false)}
-              onAskAIWithLog={(log) => {
-                setShowAISidecar(true);
-                setIsQuickChatOpen(true);
-              }}
-              runOutput={runOutput}
-              onClearRunOutput={() => setRunOutput('')}
-              files={files}
-              activeTab={activeTab}
-            />
+            <>
+              <div className="gutter-vertical" onMouseDown={handleMouseDownBottom} />
+              <TerminalPanel
+                height={terminalHeight}
+                onClose={() => setShowTerminal(false)}
+                onAskAIWithLog={(log) => {
+                  setShowAISidecar(true);
+                  setIsQuickChatOpen(true);
+                }}
+                runOutput={runOutput}
+                onClearRunOutput={() => setRunOutput('')}
+                files={files}
+                activeTab={activeTab}
+              />
+            </>
           )}
         </div>
 
