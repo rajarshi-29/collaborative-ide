@@ -43,7 +43,7 @@ export const EditorTabs = ({
           >
             <span style={{ whiteSpace: 'nowrap', userSelect: 'none' }}>{tab.title}</span>
 
-            {tab.isDirty ? (
+            {tab.isDirty && (
               <span
                 style={{
                   display: 'inline-block',
@@ -55,24 +55,24 @@ export const EditorTabs = ({
                 }}
                 title="Unsaved changes"
               />
-            ) : (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onCloseTab(tab.id);
-                }}
-                style={{
-                  opacity: isActive ? 0.8 : 0.4,
-                  padding: '2px',
-                  borderRadius: '2px',
-                  marginLeft: '4px'
-                }}
-                className="tab-close-btn"
-                title="Close tab"
-              >
-                <X size={12} />
-              </button>
             )}
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onCloseTab(tab.id);
+              }}
+              style={{
+                opacity: isActive ? 0.8 : 0.4,
+                padding: '2px',
+                borderRadius: '2px',
+                marginLeft: tab.isDirty ? '2px' : '4px'
+              }}
+              className="tab-close-btn"
+              title="Close tab"
+            >
+              <X size={12} />
+            </button>
           </div>
         );
       })}
