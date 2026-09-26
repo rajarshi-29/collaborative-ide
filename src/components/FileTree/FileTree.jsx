@@ -12,11 +12,14 @@ import {
   ChevronRight,
   ChevronDown
 } from 'lucide-react';
+import { AIResearchWidget } from '../AIResearchWidget/AIResearchWidget';
 
 export const FileTree = ({
   files = [],
   folderName = 'workspace',
   activeFileId,
+  activeFileName,
+  onApplyCode,
   onSelectFile,
   onCreateFile,
   onCreateFolder,
@@ -264,6 +267,15 @@ export const FileTree = ({
           </button>
         </div>
       </div>
+
+      {/* AI Research Assistant Droplet - Initial Mount in Explorer -> Workspace */}
+      {!isWorkspaceCollapsed && (
+        <AIResearchWidget
+          isDockedSlot={true}
+          activeFileName={activeFileName}
+          onApplyCode={onApplyCode}
+        />
+      )}
 
       {/* Creation Input */}
       {creatingType && (

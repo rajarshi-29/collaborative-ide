@@ -1,5 +1,6 @@
 @import './themes.css';
 @import './animations.css';
+@import './droplet.css';
 
 * {
   box-sizing: border-box;

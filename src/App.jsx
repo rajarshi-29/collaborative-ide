@@ -16,6 +16,7 @@ import { QuickChatModal } from './components/Modals/QuickChatModal';
 import { CollaborationModal } from './components/Modals/CollaborationModal';
 import { SettingsModal } from './components/Modals/SettingsModal';
 import { CodeRunnerService } from './services/codeRunnerService';
+import { AIResearchWidget } from './components/AIResearchWidget/AIResearchWidget';
 import './styles/index.css';
 
 export function App() {
@@ -369,6 +370,8 @@ export function App() {
                 files={files}
                 folderName={folderName}
                 activeFileId={activeTab?.fileId || null}
+                activeFileName={activeTab?.title}
+                onApplyCode={handleApplyCode}
                 onSelectFile={handleSelectFile}
                 onCreateFile={handleCreateFile}
                 onCreateFolder={handleCreateFolder}
@@ -500,6 +503,14 @@ export function App() {
         onClose={() => setIsSettingsModalOpen(false)}
         theme={theme}
         onThemeChange={setTheme}
+      />
+
+      {/* Floating / Detached AI Research Widget Portal */}
+      <AIResearchWidget
+        isDockedSlot={false}
+        activeFileName={activeTab?.title}
+        activeFileContent={activeTab?.content}
+        onApplyCode={handleApplyCode}
       />
     </div>
   );
