@@ -20,7 +20,7 @@ export const AISidecar = ({
   onApplyCode,
   onDiffPreview
 }) => {
-  const [selectedModelId, setSelectedModelId] = useState('gemini-1.5-flash');
+  const [selectedModelId, setSelectedModelId] = useState('gemini-3.5-flash');
   const [mode, setMode] = useState('chat');
   const [messages, setMessages] = useState([]);
   const [inputPrompt, setInputPrompt] = useState('');

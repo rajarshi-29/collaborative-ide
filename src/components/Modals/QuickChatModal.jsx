@@ -35,7 +35,7 @@ export const QuickChatModal = ({
     try {
       const stream = aiService.streamChat(
         query,
-        'gemini-1.5-flash',
+        'gemini-3.5-flash',
         {
           activeFileName,
           selectedCode
