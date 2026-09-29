@@ -245,34 +245,36 @@ export class AIService {
     ].filter((v, i, a) => a.indexOf(v) === i);
 
     let systemInstructions = mode === 'research'
-      ? `You are the lead AI Research Assistant & Senior Staff Architect in Collaborative IDE.
-Perform an exhaustive technical research and analysis based on the user's query and workspace context.
-Structure your response clearly with:
-1. Executive Research Summary & Architectural Analysis
-2. Technical Insights, Tradeoffs, and Performance Metrics
-3. Production-Ready Code Implementation (with complete, syntax-highlighted code blocks)
-4. Citations & References (under '### References' or '### Sources')
-
-Tone: Expert Staff Engineer, highly articulate, clear, and directly actionable.`
+      ? `You are the AI Research Assistant in Collaborative IDE.
+CORE INSTRUCTIONS:
+- Be direct, highly relevant, and concise. Answer the specific question asked without unnecessary preamble, filler, or unsolicited lengthy structured reports.
+- Keep explanations clear and focused. Use brief bullet points or short paragraphs for readability.
+- If code is needed, provide only the clean, minimal snippet directly addressing the problem. Avoid large walls of boilerplate.
+- Do NOT generate unsolicited multi-section essays (e.g. avoid forced executive summaries, tradeoff matrices, or boilerplate citations unless explicitly requested).
+- Prioritize accuracy, conciseness, and relevance above all.`
       : `You are the Copilot AI pair programmer in Collaborative IDE.
-You write clean, production-ready, beautiful code. Provide concise explanations and complete working code blocks.
-When suggesting changes or utilities, include the complete code inside markdown code blocks (\`\`\`language ... \`\`\`).`;
+Be concise, accurate, and direct. Provide clean, minimal working code and brief explanations. Avoid unnecessary conversational filler.`;
 
     let contextInfo = '';
     if (context.activeFileName) {
       contextInfo += `\n[Active File: ${context.activeFileName}]`;
     }
-    if (context.activeFileContent) {
-      contextInfo += `\n[Active File Content:\n\`\`\`\n${context.activeFileContent}\n\`\`\`]`;
-    }
-    if (context.selectedCode) {
-      contextInfo += `\n[Currently Selected Code:\n\`\`\`\n${context.selectedCode}\n\`\`\`]`;
+    if (context.selectedCode && context.selectedCode.trim()) {
+      const truncatedSelection = context.selectedCode.length > 2000
+        ? context.selectedCode.slice(0, 2000) + '\n... (truncated)'
+        : context.selectedCode;
+      contextInfo += `\n[User Selected Code Focus:\n\`\`\`\n${truncatedSelection}\n\`\`\`]`;
+    } else if (context.activeFileContent && context.activeFileContent.trim()) {
+      const truncatedContent = context.activeFileContent.length > 2500
+        ? context.activeFileContent.slice(0, 2500) + '\n... (truncated)'
+        : context.activeFileContent;
+      contextInfo += `\n[Active File Context (Reference):\n\`\`\`\n${truncatedContent}\n\`\`\`]`;
     }
     if (context.attachments && context.attachments.length > 0) {
       contextInfo += `\n[Attachments: ${context.attachments.map(a => a.name).join(', ')}]`;
     }
 
-    const fullPrompt = `${systemInstructions}\n${contextInfo}\n\nUser Request: ${prompt}`;
+    const fullPrompt = `${systemInstructions}\n${contextInfo}\n\nUser Question/Request:\n${prompt}`;
 
     let lastError = null;
 
@@ -289,7 +291,11 @@ When suggesting changes or utilities, include the complete code inside markdown 
                 role: 'user',
                 parts: [{ text: fullPrompt }]
               }
-            ]
+            ],
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 1024
+            }
           })
         });
 
@@ -374,29 +380,36 @@ When suggesting changes or utilities, include the complete code inside markdown 
     ].filter((v, i, a) => a.indexOf(v) === i);
 
     let systemInstructions = mode === 'research'
-      ? `You are the lead AI Research Assistant & Senior Staff Architect in Collaborative IDE.
-Perform an exhaustive technical research and analysis based on the user's query and workspace context.
-Structure your response clearly with:
-1. Executive Research Summary & Architectural Analysis
-2. Technical Insights, Tradeoffs, and Performance Metrics
-3. Production-Ready Code Implementation (with complete, syntax-highlighted code blocks)
-4. Citations & References (under '### References' or '### Sources')
-
-Tone: Expert Staff Engineer, highly articulate, clear, and directly actionable.`
-      : `You are the Copilot AI pair programmer in Collaborative IDE. Provide production-ready code and concise explanations.`;
+      ? `You are the AI Research Assistant in Collaborative IDE.
+CORE INSTRUCTIONS:
+- Be direct, highly relevant, and concise. Answer the specific question asked without unnecessary preamble, filler, or unsolicited lengthy structured reports.
+- Keep explanations clear and focused. Use brief bullet points or short paragraphs for readability.
+- If code is needed, provide only the clean, minimal snippet directly addressing the problem. Avoid large walls of boilerplate.
+- Do NOT generate unsolicited multi-section essays (e.g. avoid forced executive summaries, tradeoff matrices, or boilerplate citations unless explicitly requested).
+- Prioritize accuracy, conciseness, and relevance above all.`
+      : `You are the Copilot AI pair programmer in Collaborative IDE.
+Be concise, accurate, and direct. Provide clean, minimal working code and brief explanations. Avoid unnecessary conversational filler.`;
 
     let contextInfo = '';
     if (context.activeFileName) {
       contextInfo += `\n[Active File: ${context.activeFileName}]`;
     }
-    if (context.activeFileContent) {
-      contextInfo += `\n[Active File Content:\n\`\`\`\n${context.activeFileContent}\n\`\`\`]`;
+    if (context.selectedCode && context.selectedCode.trim()) {
+      const truncatedSelection = context.selectedCode.length > 2000
+        ? context.selectedCode.slice(0, 2000) + '\n... (truncated)'
+        : context.selectedCode;
+      contextInfo += `\n[User Selected Code Focus:\n\`\`\`\n${truncatedSelection}\n\`\`\`]`;
+    } else if (context.activeFileContent && context.activeFileContent.trim()) {
+      const truncatedContent = context.activeFileContent.length > 2500
+        ? context.activeFileContent.slice(0, 2500) + '\n... (truncated)'
+        : context.activeFileContent;
+      contextInfo += `\n[Active File Context (Reference):\n\`\`\`\n${truncatedContent}\n\`\`\`]`;
     }
-    if (context.selectedCode) {
-      contextInfo += `\n[Selected Code:\n\`\`\`\n${context.selectedCode}\n\`\`\`]`;
+    if (context.attachments && context.attachments.length > 0) {
+      contextInfo += `\n[Attachments: ${context.attachments.map(a => a.name).join(', ')}]`;
     }
 
-    const fullPrompt = `${systemInstructions}\n${contextInfo}\n\nUser Request: ${prompt}`;
+    const fullPrompt = `${systemInstructions}\n${contextInfo}\n\nUser Question/Request:\n${prompt}`;
 
     for (const m of candidateModels) {
       try {
@@ -405,7 +418,11 @@ Tone: Expert Staff Engineer, highly articulate, clear, and directly actionable.`
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: fullPrompt }] }]
+            contents: [{ parts: [{ text: fullPrompt }] }],
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 1024
+            }
           })
         });
 

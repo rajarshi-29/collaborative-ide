@@ -130,6 +130,60 @@ export const ResearchPanel = ({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const renderMessageContent = (text, messageId) => {
+    if (!text) return null;
+
+    const parts = text.split(/(```[\s\S]*?```)/g);
+
+    return parts.map((part, idx) => {
+      if (part.startsWith('```') && part.endsWith('```')) {
+        const firstLineBreak = part.indexOf('\n');
+        const lang = part.substring(3, firstLineBreak).trim() || 'code';
+        const code = part.substring(firstLineBreak + 1, part.length - 3).trim();
+        const blockId = `${messageId}-code-${idx}`;
+        const isCopied = copiedId === blockId;
+
+        return (
+          <div key={idx} className="research-code-block" style={{ margin: '8px 0' }}>
+            <div className="research-code-header">
+              <span>{lang}</span>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <button
+                  onClick={() => handleCopyCode(code, blockId)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '3px' }}
+                  title="Copy snippet"
+                >
+                  {isCopied ? <Check size={11} color="#34d399" /> : <Copy size={11} />}
+                  <span>{isCopied ? 'Copied' : 'Copy'}</span>
+                </button>
+
+                {onApplyCode && (
+                  <button
+                    onClick={() => onApplyCode(code)}
+                    style={{ display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--accent-primary)' }}
+                    title="Apply this code directly to active editor"
+                  >
+                    <ArrowDownLeft size={11} />
+                    <span>Apply</span>
+                  </button>
+                )}
+              </div>
+            </div>
+            <pre className="research-code-content">{code}</pre>
+          </div>
+        );
+      }
+
+      if (!part.trim()) return null;
+
+      return (
+        <div key={idx} style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '12px', lineHeight: 1.55, margin: '4px 0' }}>
+          {part}
+        </div>
+      );
+    });
+  };
+
   return (
     <div
       ref={panelRef}
@@ -285,48 +339,8 @@ export const ResearchPanel = ({
                     </div>
                   )}
 
-                  {/* Main Research Analysis */}
-                  {item.text && (
-                    <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '12px', lineHeight: 1.55 }}>
-                      {item.text}
-                    </div>
-                  )}
-
-                  {/* Code Recommendation Blocks */}
-                  {item.codeBlocks && item.codeBlocks.map((block, cIdx) => {
-                    const blockId = `${item.id}-code-${cIdx}`;
-                    const isCopied = copiedId === blockId;
-
-                    return (
-                      <div key={cIdx} className="research-code-block">
-                        <div className="research-code-header">
-                          <span>{block.language || 'code'}</span>
-                          <div style={{ display: 'flex', gap: '6px' }}>
-                            <button
-                              onClick={() => handleCopyCode(block.code, blockId)}
-                              style={{ display: 'flex', alignItems: 'center', gap: '3px' }}
-                              title="Copy snippet"
-                            >
-                              {isCopied ? <Check size={11} color="#34d399" /> : <Copy size={11} />}
-                              <span>{isCopied ? 'Copied' : 'Copy'}</span>
-                            </button>
-
-                            {onApplyCode && (
-                              <button
-                                onClick={() => onApplyCode(block.code)}
-                                style={{ display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--accent-primary)' }}
-                                title="Apply this code directly to active editor"
-                              >
-                                <ArrowDownLeft size={11} />
-                                <span>Apply</span>
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                        <pre className="research-code-content">{block.code}</pre>
-                      </div>
-                    );
-                  })}
+                  {/* Main Research Content rendered with integrated code blocks */}
+                  {item.text && renderMessageContent(item.text, item.id)}
 
                   {/* Citations & Sources */}
                   {item.sources && item.sources.length > 0 && (

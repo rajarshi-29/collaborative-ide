@@ -161,16 +161,13 @@ class AIWidgetStore {
       }
 
       updatePhase(3, 'done');
-
-      // Extract technical sources/citations
+    
+      // Extract technical sources/citations if explicitly present
       let citations = [];
       const sourcesMatch = finalAccumulated.match(/(?:###?\s*(?:Sources|References|Citations)[\s\S]*)/i);
       if (sourcesMatch) {
         const lines = sourcesMatch[0].split('\n').filter(l => l.trim().startsWith('-') || l.trim().startsWith('*') || /^\d+\./.test(l.trim()));
         citations = lines.map(l => l.replace(/^[-*\d.]+\s*/, '').replace(/\[(.*?)\]\(.*?\)/, '$1').trim()).filter(Boolean).slice(0, 4);
-      }
-      if (citations.length === 0) {
-        citations = ['Google Gemini 3.5 Flash', 'Official Language Specification', 'W3C Web Standards'];
       }
 
       this.state = {
