@@ -10,11 +10,20 @@ const ALLOWED_INVOKE_CHANNELS = new Set([
   'fs:deleteItem',
   'fs:searchFiles',
   'exec:runFile',
-  'exec:runCommand'
+  'exec:runCommand',
+  'env:get',
+  'env:getAll'
 ]);
 
 contextBridge.exposeInMainWorld('electronAPI', {
   platform: process.platform,
+
+  // Environment variables
+  env: {
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '',
+    VITE_GEMINI_API_KEY: process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || ''
+  },
+  getEnv: (key) => ipcRenderer.invoke('env:get', key),
 
   // Whitelisted invoke bridge for backward compatibility
   invoke: (channel, ...args) => {

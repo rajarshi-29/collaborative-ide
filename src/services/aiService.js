@@ -1,12 +1,32 @@
-const decodeKey = () => {
+/**
+ * Resolves the active Gemini API key from environment variables (.env via Electron runtime),
+ * local storage, or fallback settings.
+ */
+export const resolveGeminiApiKey = () => {
+  // 1. Electron preload bridge environment (.env loaded by electron/main.cjs at runtime)
   try {
-    return atob('QVEuQWI4Uk42TGMyWWJLTDRhdWtSTGhJLW9lR1hZQlhxZGkwMEhDSk9TS3JYZjA0UnhqMGc=');
-  } catch (e) {
-    return '';
-  }
+    if (typeof window !== 'undefined' && window.electronAPI && window.electronAPI.env) {
+      const key = window.electronAPI.env.GEMINI_API_KEY || window.electronAPI.env.VITE_GEMINI_API_KEY;
+      if (key && typeof key === 'string' && key.trim() && key.trim() !== 'your_gemini_api_key_here') {
+        return key.trim();
+      }
+    }
+  } catch (e) {}
+
+  // 2. Node process.env (for tests / server / electron main contexts)
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      const key = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+      if (key && typeof key === 'string' && key.trim() && key.trim() !== 'your_gemini_api_key_here') {
+        return key.trim();
+      }
+    }
+  } catch (e) {}
+
+  return '';
 };
 
-export const DEFAULT_GEMINI_KEY = decodeKey();
+export const DEFAULT_GEMINI_KEY = resolveGeminiApiKey();
 
 export const AVAILABLE_MODELS = [
   {
@@ -86,7 +106,7 @@ export const AVAILABLE_MODELS = [
 export class AIService {
   constructor() {
     this.apiKeys = {
-      gemini: DEFAULT_GEMINI_KEY
+      gemini: resolveGeminiApiKey()
     };
     this.customBackendUrl = 'http://localhost:8000/api/ai/chat';
     this.loadKeys();
@@ -100,6 +120,8 @@ export class AIService {
   }
 
   loadKeys() {
+    const activeEnvKey = resolveGeminiApiKey();
+
     try {
       const stored = localStorage.getItem('collaborative_ide_ai_keys');
       if (stored) {
@@ -113,9 +135,9 @@ export class AIService {
       console.warn('Failed to load API keys', e);
     }
 
-    // Guarantee default working Gemini key
-    if (!this.apiKeys.gemini || !this.apiKeys.gemini.trim()) {
-      this.apiKeys.gemini = DEFAULT_GEMINI_KEY;
+    // Guarantee working Gemini key: use active environment key if empty or default fallback
+    if (!this.apiKeys.gemini || !this.apiKeys.gemini.trim() || this.apiKeys.gemini === DEFAULT_GEMINI_KEY) {
+      this.apiKeys.gemini = activeEnvKey;
     }
 
     try {
@@ -132,7 +154,8 @@ export class AIService {
 
   getApiKey(provider) {
     if (provider === 'gemini' || provider === 'google') {
-      return this.apiKeys.gemini || DEFAULT_GEMINI_KEY;
+      const envKey = resolveGeminiApiKey();
+      return (this.apiKeys.gemini && this.apiKeys.gemini.trim()) ? this.apiKeys.gemini : envKey;
     }
     return this.apiKeys[provider] || '';
   }

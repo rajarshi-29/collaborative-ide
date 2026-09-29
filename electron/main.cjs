@@ -2,6 +2,28 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
+// Load environment variables from .env if present
+try {
+  const envPath = path.join(__dirname, '../.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf-8');
+    envContent.split(/\r?\n/).forEach(line => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) return;
+      const eqIdx = trimmed.indexOf('=');
+      if (eqIdx !== -1) {
+        const key = trimmed.slice(0, eqIdx).trim();
+        const value = trimmed.slice(eqIdx + 1).trim().replace(/^['"](.*)['"]$/, '$1');
+        if (!process.env[key]) {
+          process.env[key] = value;
+        }
+      }
+    });
+  }
+} catch (e) {
+  console.warn('Could not load .env file:', e);
+}
+
 let mainWindow = null;
 
 function readDirectoryRecursive(dirPath, rootPath = dirPath, depth = 0, maxDepth = 6) {
@@ -341,6 +363,18 @@ ipcMain.handle('fs:deleteItem', async (event, fullPath) => {
   } catch (err) {
     return { success: false, error: err.message };
   }
+});
+
+// Environment variable retrieval
+ipcMain.handle('env:get', (event, key) => {
+  return process.env[key] || '';
+});
+
+ipcMain.handle('env:getAll', () => {
+  return {
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
+    VITE_GEMINI_API_KEY: process.env.VITE_GEMINI_API_KEY || ''
+  };
 });
 
 app.whenReady().then(() => {
