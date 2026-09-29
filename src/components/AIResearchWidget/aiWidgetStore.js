@@ -11,12 +11,8 @@ class AIWidgetStore {
         {
           id: 'welcome-init',
           sender: 'assistant',
-          text: 'Hello! I am your AI Research Assistant, directly powered by Google Gemini. Ask me to research architecture, analyze context, perform security audits, or review code.',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          phases: [
-            { label: 'Workspace context analyzed', status: 'done' },
-            { label: 'Gemini Deep Research Engine connected', status: 'done' }
-          ]
+          text: 'Hello! I am your AI Research Assistant, powered by Gemini. Ask me anything about your project architecture, algorithms, or code.',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]
     };

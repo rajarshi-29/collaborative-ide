@@ -6,24 +6,12 @@ import {
   Trash2,
   Copy,
   Check,
-  Code,
   ArrowDownLeft,
   FileText,
-  Search,
-  ShieldAlert,
-  Cpu,
-  Layers,
   CheckCircle2,
   Loader2,
   Anchor
 } from 'lucide-react';
-
-const QUICK_COMMANDS = [
-  { id: 'deep-research', label: 'Deep Research', icon: Search, query: 'Perform an exhaustive deep research on this codebase architecture, data flows, and potential scaling bottlenecks.' },
-  { id: 'analyze-context', label: 'Analyze Context', icon: Cpu, query: 'Analyze the current active file and explain its key dependencies, exports, and execution patterns.' },
-  { id: 'arch-review', label: 'Architecture Review', icon: Layers, query: 'Review the architecture of this component. Suggest optimal separation of concerns and maintainability improvements.' },
-  { id: 'security-audit', label: 'Security Audit', icon: ShieldAlert, query: 'Run a security audit on this module. Check for prototype pollution, unescaped inputs, race conditions, or unhandled errors.' }
-];
 
 export const ResearchPanel = ({
   isOpen,
@@ -56,8 +44,7 @@ export const ResearchPanel = ({
       if (!buttonNode) return;
 
       const rect = buttonNode.getBoundingClientRect();
-      const panelWidth = Math.min(430, window.innerWidth - 24);
-      const estHeight = 490;
+      const panelWidth = Math.min(460, window.innerWidth - 24);
 
       const spaceBelow = window.innerHeight - rect.bottom - 12;
       const spaceAbove = rect.top - 12;
@@ -75,16 +62,25 @@ export const ResearchPanel = ({
         verticalOrigin = 'bottom';
       }
 
-      // Horizontal Placement: Center relative to droplet, clamp within IDE viewport
+      // Horizontal Placement
       let left = rect.left + rect.width / 2 - panelWidth / 2;
       let horizontalOrigin = 'center';
 
-      if (left < 12) {
-        left = 12;
+      if (!isDetached) {
+        // When docked in the sidebar, position nicely to the right of the sidebar
+        left = Math.min(rect.right + 12, window.innerWidth - panelWidth - 12);
+        top = Math.max(42, Math.min(rect.top, window.innerHeight - 560));
+        bottom = null;
+        verticalOrigin = 'top';
         horizontalOrigin = 'left';
-      } else if (left + panelWidth > window.innerWidth - 12) {
-        left = Math.max(12, window.innerWidth - panelWidth - 12);
-        horizontalOrigin = 'right';
+      } else {
+        if (left < 12) {
+          left = 12;
+          horizontalOrigin = 'left';
+        } else if (left + panelWidth > window.innerWidth - 12) {
+          left = Math.max(12, window.innerWidth - panelWidth - 12);
+          horizontalOrigin = 'right';
+        }
       }
 
       setPanelPosStyle({
@@ -92,7 +88,7 @@ export const ResearchPanel = ({
         bottom: bottom !== null ? `${bottom}px` : 'auto',
         left: `${left}px`,
         width: `${panelWidth}px`,
-        maxHeight: `${Math.min(520, window.innerHeight - 80)}px`,
+        maxHeight: `${Math.min(560, window.innerHeight - 80)}px`,
         transformOrigin: `${verticalOrigin} ${horizontalOrigin}`
       });
     };
@@ -141,42 +137,57 @@ export const ResearchPanel = ({
       style={panelPosStyle}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* 1. Header */}
+      {/* 1. Sleek Minimal Header */}
       <div className="research-panel-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{
-            width: '24px',
-            height: '24px',
+            width: '22px',
+            height: '22px',
             borderRadius: '50%',
             background: 'radial-gradient(circle, #38bdf8 0%, #1d4ed8 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: '#fff',
-            boxShadow: '0 0 10px rgba(56, 189, 248, 0.4)'
+            boxShadow: '0 0 8px rgba(56, 189, 248, 0.4)',
+            flexShrink: 0
           }}>
-            <Sparkles size={13} />
+            <Sparkles size={12} />
           </div>
 
-          <div>
-            <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-bright)' }}>
-              AI Research Assistant
-            </div>
-            <div style={{ fontSize: '9.5px', color: 'var(--text-muted)' }}>
-              Adaptive Context Engine
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--text-bright)' }}>
+              Research Assistant
+            </span>
+            <span style={{
+              fontSize: '9.5px',
+              padding: '1px 5px',
+              borderRadius: '3px',
+              background: 'rgba(56, 189, 248, 0.12)',
+              color: '#38bdf8',
+              border: '1px solid rgba(56, 189, 248, 0.25)',
+              fontWeight: 500
+            }}>
+              Gemini 3.5
+            </span>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          {/* Status Indicator */}
-          <span
-            className={`badge ${isResearching ? 'badge-warning' : 'badge-success'}`}
-            style={{ fontSize: '9.5px', gap: '4px' }}
-          >
-            {isResearching ? <Loader2 size={10} className="spin" /> : <CheckCircle2 size={10} />}
-            <span>{isResearching ? 'Researching' : 'Ready'}</span>
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          {isResearching ? (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: '#38bdf8' }}>
+              <Loader2 size={11} className="spin" />
+              <span>Researching...</span>
+            </span>
+          ) : (
+            <span style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              background: '#34d399',
+              boxShadow: '0 0 6px rgba(52, 211, 153, 0.7)'
+            }} title="Gemini Ready" />
+          )}
 
           {/* Dock Button (if detached) */}
           {isDetached && onDock && (
@@ -194,34 +205,23 @@ export const ResearchPanel = ({
           {/* Close Panel */}
           <button
             onClick={onClose}
-            style={{ color: 'var(--text-muted)', padding: '3px', borderRadius: '3px' }}
-            title="Close Research Panel (Esc)"
+            style={{
+              color: 'var(--text-muted)',
+              padding: '3px',
+              borderRadius: '3px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
+            title="Close (Esc)"
           >
             <X size={15} />
           </button>
         </div>
       </div>
 
-      {/* 2. Interactive Quick Command Chips */}
-      <div className="research-chips-bar">
-        {QUICK_COMMANDS.map((chip) => {
-          const IconComp = chip.icon;
-          return (
-            <button
-              key={chip.id}
-              className="research-chip"
-              onClick={() => handleSend(chip.query)}
-              disabled={isResearching}
-              title={chip.query}
-            >
-              <IconComp size={11} />
-              <span>{chip.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* 3. Conversational Research Area */}
+      {/* 2. Conversational Research Area */}
       <div className="research-conversation-body">
         {history.length === 0 ? (
           <div style={{
@@ -229,23 +229,23 @@ export const ResearchPanel = ({
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '24px 12px',
+            padding: '40px 16px',
             textAlign: 'center',
-            gap: '10px',
+            gap: '8px',
             color: 'var(--text-muted)'
           }}>
             <div style={{
-              width: '40px',
-              height: '40px',
+              width: '36px',
+              height: '36px',
               borderRadius: '50%',
-              background: 'rgba(56, 189, 248, 0.1)',
-              border: '1px solid rgba(56, 189, 248, 0.25)',
+              background: 'rgba(56, 189, 248, 0.08)',
+              border: '1px solid rgba(56, 189, 248, 0.2)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: '#38bdf8'
             }}>
-              <Sparkles size={20} />
+              <Sparkles size={18} />
             </div>
 
             <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-bright)' }}>
@@ -253,21 +253,8 @@ export const ResearchPanel = ({
             </div>
 
             <p style={{ fontSize: '11px', maxWidth: '300px', lineHeight: 1.5 }}>
-              The AI Research Droplet analyzes workspace semantics, cross-file imports, and runtime dynamics. Click any quick command above or type your inquiry.
+              Ask technical questions, explore architectural tradeoffs, analyze algorithms, or request deep research from Gemini.
             </p>
-
-            {activeFileName && (
-              <div style={{
-                fontSize: '10.5px',
-                padding: '2px 8px',
-                borderRadius: '4px',
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid var(--border-subtle)',
-                color: 'var(--accent-primary)'
-              }}>
-                Active Context: <strong>{activeFileName}</strong>
-              </div>
-            )}
           </div>
         ) : (
           history.map((item) => (
@@ -282,8 +269,8 @@ export const ResearchPanel = ({
               {/* Assistant Research Report Card */}
               {item.sender === 'assistant' && (
                 <div className="research-result-card">
-                  {/* Multi-Phase Synthesis Progress */}
-                  {item.phases && item.phases.length > 0 && (
+                  {/* Phased Progress (Only shown while researching or if active) */}
+                  {item.phases && item.phases.length > 0 && isResearching && (
                     <div className="research-phases">
                       {item.phases.map((phase, pIdx) => (
                         <div
@@ -299,9 +286,11 @@ export const ResearchPanel = ({
                   )}
 
                   {/* Main Research Analysis */}
-                  <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                    {item.text}
-                  </div>
+                  {item.text && (
+                    <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '12px', lineHeight: 1.55 }}>
+                      {item.text}
+                    </div>
+                  )}
 
                   {/* Code Recommendation Blocks */}
                   {item.codeBlocks && item.codeBlocks.map((block, cIdx) => {
@@ -356,33 +345,22 @@ export const ResearchPanel = ({
           ))
         )}
 
-        {isResearching && (
-          <div className="research-result-card" style={{ opacity: 0.85 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#38bdf8' }}>
-              <Loader2 size={13} className="spin" />
-              <span style={{ fontSize: '11px', fontWeight: 500 }}>
-                Synthesizing research across AST and workspace...
-              </span>
-            </div>
-          </div>
-        )}
-
         <div ref={messagesEndRef} />
       </div>
 
-      {/* 4. Text Input & Actions Footer */}
+      {/* 3. Text Input & Actions Footer */}
       <div className="research-input-footer">
         {/* Context bar with active file and clear history button */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <FileText size={11} />
-            <span>Context: <strong>{activeFileName || 'Whole Workspace'}</strong></span>
+            <span>Context: <strong style={{ color: 'var(--text-bright)' }}>{activeFileName || 'Workspace'}</strong></span>
           </div>
 
           {history.length > 0 && onClearHistory && (
             <button
               onClick={onClearHistory}
-              style={{ display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--text-muted)' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--text-muted)', cursor: 'pointer' }}
               title="Clear research log"
             >
               <Trash2 size={10} />
@@ -395,7 +373,7 @@ export const ResearchPanel = ({
         <div className="research-input-row">
           <textarea
             className="research-textarea"
-            placeholder="Ask research query (e.g. 'Optimize memory allocation in collab.js')..."
+            placeholder="Ask research query or explore code..."
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
