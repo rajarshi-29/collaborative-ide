@@ -144,7 +144,7 @@ export const DropletButton = ({
         ref={buttonRef}
         className="droplet-docked-container"
         onPointerDown={handlePointerDown}
-        title="AI Research Assistant - Click to open, or drag to float anywhere!"
+        title="AI Research - Click to open, or drag to float anywhere!"
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div className={`droplet-orb ${isSquashing ? 'squashing' : ''}`} style={{ width: '32px', height: '32px' }}>
@@ -165,7 +165,7 @@ export const DropletButton = ({
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-bright)' }}>
-              AI Research Droplet
+              AI Research
             </span>
             <span style={{ fontSize: '9.5px', color: 'var(--text-muted)' }}>
               Click or drag to detach
@@ -190,7 +190,7 @@ export const DropletButton = ({
         top: `${position.y}px`
       }}
       onPointerDown={handlePointerDown}
-      title="AI Research Assistant - Drag to move, click to toggle research panel"
+      title="AI Research - Drag to move, click to toggle research panel"
     >
       <div className={`droplet-orb ${isSquashing ? 'squashing' : ''}`}>
         <Sparkles size={20} strokeWidth={2.2} />

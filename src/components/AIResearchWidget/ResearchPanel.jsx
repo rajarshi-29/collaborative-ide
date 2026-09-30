@@ -211,7 +211,7 @@ export const ResearchPanel = ({
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--text-bright)' }}>
-              Research Assistant
+              AI Research
             </span>
             <span style={{
               fontSize: '9.5px',

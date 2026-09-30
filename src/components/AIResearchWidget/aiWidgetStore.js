@@ -11,7 +11,7 @@ class AIWidgetStore {
         {
           id: 'welcome-init',
           sender: 'assistant',
-          text: 'Hello! I am your AI Research Assistant, powered by Gemini. Ask me anything about your project architecture, algorithms, or code.',
+          text: 'Hello! I am AI Research, powered by Gemini. Ask me anything about your project architecture, algorithms, or code.',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]
