@@ -74,11 +74,11 @@ export const ResearchPanel = ({
         verticalOrigin = 'top';
         horizontalOrigin = 'left';
       } else {
-        if (left < 12) {
-          left = 12;
+        if (left < 56) {
+          left = 56;
           horizontalOrigin = 'left';
         } else if (left + panelWidth > window.innerWidth - 12) {
-          left = Math.max(12, window.innerWidth - panelWidth - 12);
+          left = Math.max(56, window.innerWidth - panelWidth - 12);
           horizontalOrigin = 'right';
         }
       }

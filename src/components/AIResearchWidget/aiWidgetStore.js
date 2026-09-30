@@ -1,10 +1,17 @@
 import { AIService } from '../../services/aiService';
 
+const getDefaultPosition = () => {
+  if (typeof window === 'undefined') return { x: 120, y: 640 };
+  const x = 120;
+  const y = Math.max(80, window.innerHeight - 140);
+  return { x, y };
+};
+
 class AIWidgetStore {
   constructor() {
     this.state = {
-      isDetached: false,
-      position: { x: typeof window !== 'undefined' ? Math.max(20, window.innerWidth - 80) : 1000, y: 140 },
+      isDetached: true,
+      position: getDefaultPosition(),
       isOpen: false,
       isResearching: false,
       history: [
