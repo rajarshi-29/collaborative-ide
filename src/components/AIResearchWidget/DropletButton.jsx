@@ -14,7 +14,8 @@ export const DropletButton = ({
   containerRef
 }) => {
   const [isSquashing, setIsSquashing] = useState(false);
-  const [ripples, setRipples] = useState([]);
+  const [clickRipples, setClickRipples] = useState([]);
+  const [containerRipples, setContainerRipples] = useState([]);
   const internalRef = useRef(null);
   const buttonRef = containerRef || internalRef;
 
@@ -123,18 +124,24 @@ export const DropletButton = ({
       const clickX = e && typeof e.clientX === 'number' ? e.clientX - rect.left : rect.width / 2;
       const clickY = e && typeof e.clientY === 'number' ? e.clientY - rect.top : rect.height / 2;
 
-      // Spawn organic fluid ripple ring originating from contact point
-      const rippleId = 'ripple-' + Date.now();
-      setRipples(prev => [...prev, { id: rippleId, x: clickX, y: clickY }]);
-
+      // Spawn container water ripple from click location
+      const containerRippleId = 'c-ripple-' + Date.now();
+      setContainerRipples(prev => [...prev, { id: containerRippleId, x: clickX, y: clickY }]);
       setTimeout(() => {
-        setRipples(prev => prev.filter(r => r.id !== rippleId));
-      }, 700);
-
-      // Trigger elastic surface tension squash-and-stretch
-      setIsSquashing(true);
-      setTimeout(() => setIsSquashing(false), 460);
+        setContainerRipples(prev => prev.filter(r => r.id !== containerRippleId));
+      }, 750);
     }
+
+    // Spawn orb splash ripples
+    const orbRippleId = 'orb-ripple-' + Date.now();
+    setClickRipples(prev => [...prev, { id: orbRippleId }]);
+    setTimeout(() => {
+      setClickRipples(prev => prev.filter(r => r.id !== orbRippleId));
+    }, 700);
+
+    // Trigger elastic surface tension squash-and-stretch
+    setIsSquashing(true);
+    setTimeout(() => setIsSquashing(false), 460);
   };
 
   // 1. DOCKED STATE (In Explorer -> Workspace section)
@@ -146,21 +153,37 @@ export const DropletButton = ({
         onPointerDown={handlePointerDown}
         title="AI Research - Click to open, or drag to float anywhere!"
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div className={`droplet-orb ${isSquashing ? 'squashing' : ''}`} style={{ width: '32px', height: '32px' }}>
-            <Sparkles size={16} strokeWidth={2.2} />
-            {ripples.map(r => (
-              <span
-                key={r.id}
-                className="droplet-ripple-ring"
-                style={{
-                  left: `${r.x}px`,
-                  top: `${r.y}px`,
-                  width: '28px',
-                  height: '28px'
-                }}
-              />
+        {/* Dynamic Water Ripple on Click */}
+        {containerRipples.map(r => (
+          <span
+            key={r.id}
+            className="droplet-container-ripple"
+            style={{
+              left: `${r.x}px`,
+              top: `${r.y}px`,
+              width: '60px',
+              height: '60px'
+            }}
+          />
+        ))}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '9px', position: 'relative', zIndex: 1 }}>
+          <div style={{ position: 'relative', width: '32px', height: '32px', flexShrink: 0 }}>
+            {/* Ambient Water Ripples */}
+            <div className="droplet-ambient-ripple-layer">
+              <span className="droplet-ambient-ripple wave-1" />
+              <span className="droplet-ambient-ripple wave-2" />
+              <span className="droplet-ambient-ripple wave-3" />
+            </div>
+
+            {/* Click Splash Ripples */}
+            {clickRipples.map(r => (
+              <span key={r.id} className="droplet-click-ripple" />
             ))}
+
+            <div className={`droplet-orb ${isSquashing ? 'squashing' : ''}`} style={{ width: '32px', height: '32px' }}>
+              <Sparkles size={16} strokeWidth={2.2} />
+            </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -173,7 +196,7 @@ export const DropletButton = ({
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-muted)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-muted)', position: 'relative', zIndex: 1 }}>
           <Move size={12} style={{ opacity: 0.6 }} />
         </div>
       </div>
@@ -192,25 +215,23 @@ export const DropletButton = ({
       onPointerDown={handlePointerDown}
       title="AI Research - Drag to move, click to toggle research panel"
     >
-      <div className={`droplet-orb ${isSquashing ? 'squashing' : ''}`}>
-        <Sparkles size={20} strokeWidth={2.2} />
+      <div style={{ position: 'relative', width: '44px', height: '44px' }}>
+        {/* Ambient Water Ripples */}
+        <div className="droplet-ambient-ripple-layer">
+          <span className="droplet-ambient-ripple wave-1" />
+          <span className="droplet-ambient-ripple wave-2" />
+          <span className="droplet-ambient-ripple wave-3" />
+        </div>
 
-        {/* Pulse Dot if unread or active */}
-        {(hasUnread || isOpen) && <span className="droplet-pulse-indicator" />}
-
-        {/* Fluid Splat Ripples */}
-        {ripples.map(r => (
-          <span
-            key={r.id}
-            className="droplet-ripple-ring"
-            style={{
-              left: `${r.x}px`,
-              top: `${r.y}px`,
-              width: '38px',
-              height: '38px'
-            }}
-          />
+        {/* Click Splash Ripples */}
+        {clickRipples.map(r => (
+          <span key={r.id} className="droplet-click-ripple" />
         ))}
+
+        <div className={`droplet-orb ${isSquashing ? 'squashing' : ''}`}>
+          <Sparkles size={20} strokeWidth={2.2} />
+          {(hasUnread || isOpen) && <span className="droplet-pulse-indicator" />}
+        </div>
       </div>
     </div>
   );
